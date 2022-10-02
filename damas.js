@@ -53,9 +53,30 @@ function checkersBoard() {
                 }
             }
 
-            html += `
-                <td class="w12 ${squares[pos]}" id="${numbers[r]}${letters[c]}"></td>
-            `
+            if (pos == 1) {
+                if (r < 3) {
+                    html += `
+                        <td class="w12 ${squares[pos]}" id="${numbers[r]}${letters[c]}">
+                            <img src="pieces/light.png" width="100%">
+                        </td>
+                    `   
+                } else if (r >= 5) {
+                    html += `
+                        <td class="w12 ${squares[pos]}" id="${numbers[r]}${letters[c]}">
+                            <img src="pieces/black.png" width="100%">
+                        </td>
+                    `   
+                } else {
+                    html += `
+                        <td class="w12 ${squares[pos]}" id="${numbers[r]}${letters[c]}"></td>
+                    ` 
+                }     
+            } else {
+                html += `
+                    <td class="w12 ${squares[pos]}" id="${numbers[r]}${letters[c]}"></td>
+                ` 
+            }
+
         }   
 
         html += `
@@ -88,5 +109,5 @@ function squareSizes() {
 function movePieces(id) {
     console.log(id)
 
-    
+
 }
