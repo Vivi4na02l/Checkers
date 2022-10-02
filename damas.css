@@ -1,0 +1,17 @@
+.w100 {
+    width: 100%
+} .w90 {
+    width: 90%;
+} .w12 {
+    width: 12%;
+}
+
+.inlineblock {
+    display: flex;
+}
+
+.wSquare {
+    background-color: #ffe9cc;
+} .bSquare {
+    background-color: #aa793a;
+}
