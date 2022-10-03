@@ -1,4 +1,5 @@
 // CHECKERS GAME
+let clicked = true;
 checkersBoard();
 squareSizes();
 
@@ -17,7 +18,7 @@ window.addEventListener("resize", event => {
 let squares = document.querySelectorAll('.w12')
 for (const square of squares) {
     square.addEventListener("click", event => {
-        movePieces(event.target.id);
+        movePieces(event.target.id, event.target.className);
     })
 }
 
@@ -57,13 +58,13 @@ function checkersBoard() {
                 if (r < 3) {
                     html += `
                         <td class="w12 ${squares[pos]}" id="${numbers[r]}${letters[c]}">
-                            <img src="pieces/light.png" width="100%">
+                            <img src="pieces/light.png" class="${numbers[r]}${letters[c]}" width="100%" id="img">
                         </td>
                     `   
                 } else if (r >= 5) {
                     html += `
                         <td class="w12 ${squares[pos]}" id="${numbers[r]}${letters[c]}">
-                            <img src="pieces/black.png" width="100%">
+                            <img src="pieces/black.png" class="${numbers[r]}${letters[c]}" id="img" style="width: 100%;">
                         </td>
                     `   
                 } else {
@@ -92,12 +93,35 @@ function checkersBoard() {
  * defines height of squares to be the same as the width
  */
 function squareSizes() {
-    let wdSquare = document.querySelector('.w12').clientWidth
-    wdSquare += 'px'
+    if (window.innerHeight > window.innerWidth) {
+        // let wdSquare = document.querySelector('.w12').clientWidth
+        // wdSquare += 'px'
 
-    let rows = document.querySelectorAll('#rowSquare')
-    for (const row of rows) {
-        row.style.height = wdSquare
+        let perWidth = window.innerWidth * 0.1 + "px"
+
+        for (const square of document.querySelectorAll('.w12')) {
+            square.style.width = perWidth
+        }
+
+        let rows = document.querySelectorAll('#rowSquare')
+        for (const row of rows) {
+            row.style.height = perWidth
+        }
+
+        // alert("aqui");
+    } else {
+        let perHeight = window.innerHeight * 0.1 + "px"
+
+        let rows = document.querySelectorAll('#rowSquare')
+        for (const row of rows) {
+            row.style.height = perHeight
+        }
+        
+        for (const square of document.querySelectorAll('.w12')) {
+            square.style.width = perHeight
+        }
+
+        // alert("ali");
     }
 }
 
@@ -106,8 +130,18 @@ function squareSizes() {
  * detects if there's a piece in the square clicked and averigues the player choose to move to another square
  * @param {*} id position/specific square clicked on
  */
-function movePieces(id) {
-    console.log(id)
+function movePieces(id, iClass) {
+    // console.log(id)
 
+    id = '#'+id
 
+    if (clicked) {
+        if (id != "#img") {
+            alert(id)
+        } else {
+            alert(iClass)
+        }
+    }
+
+    clicked = !clicked
 }
