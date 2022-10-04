@@ -1,5 +1,6 @@
 // CHECKERS GAME
 let clicked = true;
+let firstSquare;
 checkersBoard();
 squareSizes();
 
@@ -15,7 +16,7 @@ window.addEventListener("resize", event => {
 /**
  * event that detects which square was clicked and gives information to function
  */
-let squares = document.querySelectorAll('.w12')
+let squares = document.querySelectorAll('.bSquare')
 for (const square of squares) {
     square.addEventListener("click", event => {
         movePieces(event.target.id, event.target.className);
@@ -131,15 +132,33 @@ function squareSizes() {
  * @param {*} id position/specific square clicked on
  */
 function movePieces(id, iClass) {
-    // console.log(id)
-
-    id = '#'+id
 
     if (clicked) {
-        if (id != "#img") {
+        if (id != "img") {
             alert(id)
+            clicked = false
+
+            firstSquare = id
         } else {
-            alert(iClass)
+            firstSquare = iClass
+        }
+    } else {
+        // alert(id)
+        // id == 'img' ? id = iClass : id = id
+
+        // alert(firstSquare)
+        if (id == "img") {
+            alert("You need to chose a free square to move your piece!")
+        } else {
+            let line2 = parseInt(id.slice(0,1))
+            let line1 = parseInt(firstSquare.slice(0,1))
+
+            if (line1 - 1 == line2) {
+                document.getElementById(id).innerHTML += `
+                    <img src="pieces/black.png" class="${id}" id="img" style="width: 100%;"></img>
+                `
+                document.getElementById(firstSquare).innerHTML = ''
+            }
         }
     }
 
