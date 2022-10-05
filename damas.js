@@ -1,6 +1,7 @@
 // CHECKERS GAME
 let clicked = true;
 let firstSquare;
+let play = 0;
 checkersBoard();
 squareSizes();
 
@@ -22,8 +23,6 @@ for (const square of squares) {
         movePieces(event.target.id, event.target.className);
     })
 }
-
-
 
 /**
  * function that creates the squares and rows of the checkers board game
@@ -108,8 +107,6 @@ function squareSizes() {
         for (const row of rows) {
             row.style.height = perWidth
         }
-
-        // alert("aqui");
     } else {
         let perHeight = window.innerHeight * 0.1 + "px"
 
@@ -121,8 +118,6 @@ function squareSizes() {
         for (const square of document.querySelectorAll('.w12')) {
             square.style.width = perHeight
         }
-
-        // alert("ali");
     }
 }
 
@@ -135,18 +130,15 @@ function movePieces(id, iClass) {
 
     if (clicked) {
         if (id != "img") {
-            alert(id)
             clicked = false
 
             firstSquare = id
         } else {
+            document.getElementById(iClass).style.backgroundColor = "#3b9742"
+
             firstSquare = iClass
         }
     } else {
-        // alert(id)
-        // id == 'img' ? id = iClass : id = id
-
-        // alert(firstSquare)
         if (id == "img") {
             alert("You need to chose a free square to move your piece!")
         } else {
@@ -157,10 +149,53 @@ function movePieces(id, iClass) {
                 document.getElementById(id).innerHTML += `
                     <img src="pieces/black.png" class="${id}" id="img" style="width: 100%;"></img>
                 `
+
                 document.getElementById(firstSquare).innerHTML = ''
+                document.getElementById(firstSquare).style.backgroundColor = "#aa793a"
+                computersTurn();
+            } else {
+                // alert("You can't go that far!")
+                document.getElementById(id).style.backgroundColor = "#aa3a3a"
+
+                setTimeout(defaultColors, "1000", id, firstSquare)
             }
         }
     }
 
     clicked = !clicked
+}
+
+function defaultColors(id, firstSquare) {
+    document.getElementById(firstSquare).style.backgroundColor = "#aa793a"
+    document.getElementById(id).style.backgroundColor = "#aa793a"
+}
+
+function computersTurn() {
+    let letters, moveFrom, moveTo
+    play += 1
+    pos = Math.floor(Math.random() * 4)
+
+    play % 2 == 0 ? letters = ['B','D','F','H'] : letters = ['A','C','E','G']
+
+    if (play == 1) {
+
+        moveTo = letters[pos]
+        
+        if (moveTo == 'A') {
+            moveFrom = letters[pos+1]
+        } 
+        // else if (moveTo == 'H') {
+        //     moveFrom = letters[pos-1]
+        // } 
+        else {
+            minusPlus = [-1,1]
+
+            moveFrom = letters[pos+minusPlus[Math.floor(Math.random())]]
+        }
+
+        document.getElementById('3'+moveFrom).innerHTML = ''
+        document.getElementById('4'+moveTo).innerHTML += `
+            <img src="pieces/light.png" class="4${moveTo}" id="img" style="width: 100%;"></img>
+        `
+    }
 }
