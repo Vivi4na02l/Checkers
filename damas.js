@@ -171,31 +171,43 @@ function defaultColors(id, firstSquare) {
 }
 
 function computersTurn() {
-    let letters, moveFrom, moveTo
+    let line, lettersFrom, lettersTo, moveFrom, moveTo
     play += 1
-    pos = Math.floor(Math.random() * 4)
-
-    play % 2 == 0 ? letters = ['B','D','F','H'] : letters = ['A','C','E','G']
 
     if (play == 1) {
+        line = 3
+    }
 
-        moveTo = letters[pos]
+    if (line % 2 != 0) {
+        lettersFrom = ['B','D','F','H']
+        lettersTo = ['A','C','E','G']
+    } else {
+        lettersFrom = ['A','C','E','G']
+        lettersTo = ['B','D','F','H']
+    }
+
+    pos = Math.floor(Math.random() * 4)
+    
+    if (play == 1) {
+
+        moveTo = lettersTo[pos]
         
-        if (moveTo == 'A') {
-            moveFrom = letters[pos+1]
-        } 
-        // else if (moveTo == 'H') {
-        //     moveFrom = letters[pos-1]
-        // } 
-        else {
-            minusPlus = [-1,1]
+        if (line % 2 == 0 && pos == 0) {
+            moveFrom = lettersFrom[pos]
+        } else if (line % 2 != 0 && pos == 3) {
+            moveFrom = lettersFrom[pos-1]
+        } else {
+            noneOrPlus = [0,1]
 
-            moveFrom = letters[pos+minusPlus[Math.floor(Math.random())]]
+            moveFrom = lettersFrom[pos+noneOrPlus[Math.floor(Math.random())]]
         }
+
+        alert(moveFrom+','+moveTo)
 
         document.getElementById('3'+moveFrom).innerHTML = ''
         document.getElementById('4'+moveTo).innerHTML += `
             <img src="pieces/light.png" class="4${moveTo}" id="img" style="width: 100%;"></img>
         `
     }
+
 }
