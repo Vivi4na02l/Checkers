@@ -1,7 +1,23 @@
 // CHECKERS GAME
-let clicked = true;
+let computerSquares = [
+    '1B','1D','1F','1H',
+    '2A','2C','2E','2G',
+    '3B','3D','3F','3H',
+];
+
+let playerSquares = [
+    '6A','6C','6E','6G',
+    '7B','7D','7F','7H',
+    '8A','8C','8E','8G',
+];
+
+let avaiableSquares = [
+    '4A','4C','4E','4G',
+    '5B','5D','5F','5H',
+];
+
+let clicked = true; //play = false;
 let firstSquare;
-let play = 0;
 checkersBoard();
 squareSizes();
 
@@ -141,6 +157,7 @@ function movePieces(id, iClass) {
     } else {
         if (id == "img") {
             alert("You need to chose a free square to move your piece!")
+            document.getElementById(firstSquare).style.backgroundColor = "#aa793a"
         } else {
             let line2 = parseInt(id.slice(0,1))
             let line1 = parseInt(firstSquare.slice(0,1))
@@ -149,6 +166,9 @@ function movePieces(id, iClass) {
                 document.getElementById(id).innerHTML += `
                     <img src="pieces/black.png" class="${id}" id="img" style="width: 100%;"></img>
                 `
+
+                playerSquares[playerSquares.indexOf(firstSquare)] = id
+                avaiableSquares[avaiableSquares.indexOf(id)] = firstSquare
 
                 document.getElementById(firstSquare).innerHTML = ''
                 document.getElementById(firstSquare).style.backgroundColor = "#aa793a"
@@ -171,43 +191,72 @@ function defaultColors(id, firstSquare) {
 }
 
 function computersTurn() {
-    let line, lettersFrom, lettersTo, moveFrom, moveTo
-    play += 1
 
-    if (play == 1) {
-        line = 3
+    // lineAvaiable = avaiableSquares[Math.floor(Math.random() * avaiableSquares.length)].slice(0,1)
+    let play = false
+    let fromSquares = []
+    let fromSquare2 = ''
+    let possibilities = 0
+    let line, letter, fromSquare, letters, lettersFrom
+    while (!play) {    
+       for (const square of avaiableSquares) {
+            possibilities += 1
+
+            line = square.slice(0,1)
+            letter = square.slice(1,2)
+
+            if (line % 2) {
+                letters = ['B','D','F','H']
+                lettersFrom = ['A','C','E','G']
+            } else {
+                letters = ['A','C','E','G']
+                lettersFrom = ['B','D','F','H']
+            }
+
+            pos = letters.indexOf(letter)
+
+            console.log(letters);
+            console.log(letter);
+
+            if (line % 2 && pos == 0) {
+                fromSquare = (parseInt(line)-1) + lettersFrom[pos]
+            } else if (line % 2 && pos != 0) {
+                fromSquare = (parseInt(line)-1) + lettersFrom[pos]
+                fromSquare2 = (parseInt(line)-1) + lettersFrom[pos-1]
+            } else if (line % 2 != 0 && pos == letters.length) {
+                fromSquare = (parseInt(line)-1) + lettersFrom[pos]
+            } else {
+                fromSquare = (parseInt(line)-1) + lettersFrom[pos]
+                fromSquare2 = (parseInt(line)-1) + lettersFrom[pos-1]
+            }
+
+            if (computerSquares.includes(fromSquare) && !fromSquares.includes(fromSquare)) {
+                fromSquares.push({"toSquare":square, "fromSquare":fromSquare})
+            }
+
+            if (computerSquares.includes(fromSquare2)
+                && !fromSquares.includes(fromSquare2)
+                && fromSquare2 != '') {
+                fromSquares.push({"toSquare":square, "fromSquare":fromSquare2})
+            }
+
+            if (possibilities == avaiableSquares.length) {
+                pos = Math.floor(Math.random() * fromSquares.length)
+
+                document.getElementById(fromSquares[pos].fromSquare).innerHTML = ''
+                document.getElementById(fromSquares[pos].toSquare).innerHTML += `
+                    <img src="pieces/light.png" class="4${moveTo}" id="img" style="width: 100%;"></img>
+                `
+
+                computerSquares[computerSquares.indexOf(fromSquares[pos].fromSquare)] = fromSquares[pos].toSquare
+                avaiableSquares[avaiableSquares.indexOf(fromSquares[pos].toSquare)] = fromSquares[pos].fromSquare
+
+                console.log(avaiableSquares);
+
+                play = true
+            }
+
+            // avaiableLines.includes(line) ? '' : avaiableLines.push(line)
+       }
     }
-
-    if (line % 2 != 0) {
-        lettersFrom = ['B','D','F','H']
-        lettersTo = ['A','C','E','G']
-    } else {
-        lettersFrom = ['A','C','E','G']
-        lettersTo = ['B','D','F','H']
-    }
-
-    pos = Math.floor(Math.random() * 4)
-    
-    if (play == 1) {
-
-        moveTo = lettersTo[pos]
-        
-        if (line % 2 == 0 && pos == 0) {
-            moveFrom = lettersFrom[pos]
-        } else if (line % 2 != 0 && pos == 3) {
-            moveFrom = lettersFrom[pos-1]
-        } else {
-            noneOrPlus = [0,1]
-
-            moveFrom = lettersFrom[pos+noneOrPlus[Math.floor(Math.random())]]
-        }
-
-        alert(moveFrom+','+moveTo)
-
-        document.getElementById('3'+moveFrom).innerHTML = ''
-        document.getElementById('4'+moveTo).innerHTML += `
-            <img src="pieces/light.png" class="4${moveTo}" id="img" style="width: 100%;"></img>
-        `
-    }
-
 }
