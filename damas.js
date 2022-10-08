@@ -185,78 +185,98 @@ function movePieces(id, iClass) {
     clicked = !clicked
 }
 
+/**
+ * returns the colors of the squares clicked by the player back to their default board color 
+ * @param {*} id transfers the second clicked square by the player
+ * @param {*} firstSquare transfers the first clicked square by the player
+ */
 function defaultColors(id, firstSquare) {
     document.getElementById(firstSquare).style.backgroundColor = "#aa793a"
     document.getElementById(id).style.backgroundColor = "#aa793a"
 }
 
+/**
+ * determines what plays the computer is gonna make
+ */
 function computersTurn() {
 
-    // lineAvaiable = avaiableSquares[Math.floor(Math.random() * avaiableSquares.length)].slice(0,1)
-    let play = false
+    let letters = ['A','B','C','D','E','F','G','H']
     let fromSquares = []
     let fromSquare2 = ''
     let possibilities = 0
-    let line, letter, fromSquare, letters, lettersFrom
-    while (!play) {    
-       for (const square of avaiableSquares) {
-            possibilities += 1
+    let line, letter, fromSquare, lettersTo, lettersFrom
 
-            line = square.slice(0,1)
-            letter = square.slice(1,2)
 
-            if (line % 2) {
-                letters = ['B','D','F','H']
-                lettersFrom = ['A','C','E','G']
-            } else {
-                letters = ['A','C','E','G']
-                lettersFrom = ['B','D','F','H']
-            }
+    // for (const square of computerSquares) {
+    //     line = square.slice(0,1)
+    //     letter = square.slice(1,2)
+    //     posLetter = letters.indexOf(letter)
 
-            pos = letters.indexOf(letter)
+    //     for (const playerPiece of object) {
+            
+    //     }
 
-            console.log(letters);
-            console.log(letter);
+    //     eatPieceLine = parseInt(line) + 1
 
-            if (line % 2 && pos == 0) {
-                fromSquare = (parseInt(line)-1) + lettersFrom[pos]
-            } else if (line % 2 && pos != 0) {
-                fromSquare = (parseInt(line)-1) + lettersFrom[pos]
-                fromSquare2 = (parseInt(line)-1) + lettersFrom[pos-1]
-            } else if (line % 2 != 0 && pos == letters.length) {
-                fromSquare = (parseInt(line)-1) + lettersFrom[pos]
-            } else {
-                fromSquare = (parseInt(line)-1) + lettersFrom[pos]
-                fromSquare2 = (parseInt(line)-1) + lettersFrom[pos-1]
-            }
+    //     if (line % 2 == 0) {
+    //         eatPieceLetter2 = letters[pos-1]    
+    //     } else {
+    //         eatPieceLetter = letters[pos+1]
+    //     }
+        
+    // }    
 
-            if (computerSquares.includes(fromSquare) && !fromSquares.includes(fromSquare)) {
-                fromSquares.push({"toSquare":square, "fromSquare":fromSquare})
-            }
 
-            if (computerSquares.includes(fromSquare2)
-                && !fromSquares.includes(fromSquare2)
-                && fromSquare2 != '') {
-                fromSquares.push({"toSquare":square, "fromSquare":fromSquare2})
-            }
+    for (const square of avaiableSquares) {
+        possibilities += 1
 
-            if (possibilities == avaiableSquares.length) {
-                pos = Math.floor(Math.random() * fromSquares.length)
+        line = parseInt(square.slice(0,1))
+        letter = square.slice(1,2)
 
-                document.getElementById(fromSquares[pos].fromSquare).innerHTML = ''
-                document.getElementById(fromSquares[pos].toSquare).innerHTML += `
-                    <img src="pieces/light.png" class="4${moveTo}" id="img" style="width: 100%;"></img>
-                `
+        if (line % 2 == 0) {
+            lettersTo = ['A','C','E','G']
+            lettersFrom = ['B','D','F','H']
+        } else {
+            lettersTo = ['B','D','F','H']
+            lettersFrom = ['A','C','E','G']
+        }
 
-                computerSquares[computerSquares.indexOf(fromSquares[pos].fromSquare)] = fromSquares[pos].toSquare
-                avaiableSquares[avaiableSquares.indexOf(fromSquares[pos].toSquare)] = fromSquares[pos].fromSquare
+        pos = lettersTo.indexOf(letter)
 
-                console.log(avaiableSquares);
+        if (line % 2 == 0 && pos == 0) {
+            fromSquare = (parseInt(line)-1) + lettersFrom[pos]
+        } else if (line % 2 == 0 && pos != 0) {
+            fromSquare = (parseInt(line)-1) + lettersFrom[pos]
+            fromSquare2 = (parseInt(line)-1) + lettersFrom[pos-1]
+        } else if (line % 2 != 0 && pos == lettersTo.length) {
+            fromSquare = (parseInt(line)-1) + lettersFrom[pos]
+        } else if (line % 2 != 0 && pos != lettersTo.length) {
+            fromSquare = (parseInt(line)-1) + lettersFrom[pos]
+            fromSquare2 = (parseInt(line)-1) + lettersFrom[pos+1]
+        }
 
-                play = true
-            }
+        if (computerSquares.includes(fromSquare) && !fromSquares.includes(fromSquare)) {
+            fromSquares.push({"toSquare":square, "fromSquare":fromSquare})
+        }
 
-            // avaiableLines.includes(line) ? '' : avaiableLines.push(line)
-       }
+        if (computerSquares.includes(fromSquare2)
+            && !fromSquares.includes(fromSquare2)
+            && fromSquare2 != '') {
+            fromSquares.push({"toSquare":square, "fromSquare":fromSquare2})
+        }
+
+        
+        if (possibilities == avaiableSquares.length) {
+            pos = Math.floor(Math.random() * fromSquares.length)
+
+            document.getElementById(fromSquares[pos].fromSquare).innerHTML = ''
+            document.getElementById(fromSquares[pos].toSquare).innerHTML += `
+                <img src="pieces/light.png" class="4${moveTo}" id="img" style="width: 100%;"></img>
+            `
+
+            computerSquares[computerSquares.indexOf(fromSquares[pos].fromSquare)] = fromSquares[pos].toSquare
+            avaiableSquares[avaiableSquares.indexOf(fromSquares[pos].toSquare)] = fromSquares[pos].fromSquare
+        }
+        // avaiableLines.includes(line) ? '' : avaiableLines.push(line)
     }
 }
