@@ -202,81 +202,130 @@ function computersTurn() {
 
     let letters = ['A','B','C','D','E','F','G','H']
     let fromSquares = []
+    let canEatFrom = []
     let fromSquare2 = ''
     let possibilities = 0
-    let line, letter, fromSquare, lettersTo, lettersFrom
+    let line, pLine, pLetter, letter, fromSquare, lettersTo, lettersFrom, pos, posLetter
 
 
-    // for (const square of computerSquares) {
-    //     line = square.slice(0,1)
-    //     letter = square.slice(1,2)
-    //     posLetter = letters.indexOf(letter)
-
-    //     for (const playerPiece of object) {
-            
-    //     }
-
-    //     eatPieceLine = parseInt(line) + 1
-
-    //     if (line % 2 == 0) {
-    //         eatPieceLetter2 = letters[pos-1]    
-    //     } else {
-    //         eatPieceLetter = letters[pos+1]
-    //     }
-        
-    // }    
-
-
-    for (const square of avaiableSquares) {
-        possibilities += 1
-
+    for (const square of computerSquares) {
         line = parseInt(square.slice(0,1))
         letter = square.slice(1,2)
+        posLetter = letters.indexOf(letter)
 
-        if (line % 2 == 0) {
-            lettersTo = ['A','C','E','G']
-            lettersFrom = ['B','D','F','H']
-        } else {
-            lettersTo = ['B','D','F','H']
-            lettersFrom = ['A','C','E','G']
+        for (const playerPiece of playerSquares) {
+            possibilities += 1
+
+            pLine = parseInt(playerPiece.slice(0,1))
+            pLetter = playerPiece.slice(1,2)
+
+            if ((pLine % 2 == 0 && pLetter != 'A') ||
+                (pLine % 2 != 0 && pLetter != 'H')) {
+
+                
+                if ((line+1 == pLine) &&
+                    (letters[posLetter+1] == pLetter) &&
+                    (avaiableSquares.includes(pLine+1+letters[posLetter+2]))) {
+                        console.log('1');
+                    canEatFrom.push({
+                        "fromSquare" : line+letter,
+                        "eatSquare" : pLine+pLetter,
+                        "toSquare" : (pLine+1) + letters[posLetter+2]
+                    })
+                    console.log(canEatFrom);
+
+                } else if ((line+1 == pLine) &&
+                            (letters[posLetter-1] == pLetter) &&
+                            (avaiableSquares.includes(pLine+1+letters[posLetter-2]))) {
+
+                    canEatFrom.push({
+                        "fromSquare" : line+letter,
+                        "eatSquare" : pLine+pLetter,
+                        "toSquare" : (pLine+1) + letters[posLetter-2]
+                    })
+                }
+            }
         }
 
-        pos = lettersTo.indexOf(letter)
+        // eatPieceLine = parseInt(line) + 1
 
-        if (line % 2 == 0 && pos == 0) {
-            fromSquare = (parseInt(line)-1) + lettersFrom[pos]
-        } else if (line % 2 == 0 && pos != 0) {
-            fromSquare = (parseInt(line)-1) + lettersFrom[pos]
-            fromSquare2 = (parseInt(line)-1) + lettersFrom[pos-1]
-        } else if (line % 2 != 0 && pos == lettersTo.length) {
-            fromSquare = (parseInt(line)-1) + lettersFrom[pos]
-        } else if (line % 2 != 0 && pos != lettersTo.length) {
-            fromSquare = (parseInt(line)-1) + lettersFrom[pos]
-            fromSquare2 = (parseInt(line)-1) + lettersFrom[pos+1]
-        }
-
-        if (computerSquares.includes(fromSquare) && !fromSquares.includes(fromSquare)) {
-            fromSquares.push({"toSquare":square, "fromSquare":fromSquare})
-        }
-
-        if (computerSquares.includes(fromSquare2)
-            && !fromSquares.includes(fromSquare2)
-            && fromSquare2 != '') {
-            fromSquares.push({"toSquare":square, "fromSquare":fromSquare2})
-        }
-
+        // if (line % 2 == 0) {
+        //     eatPieceLetter2 = letters[pos-1]    
+        // } else {
+        //     eatPieceLetter = letters[pos+1]
+        // }
         
-        if (possibilities == avaiableSquares.length) {
-            pos = Math.floor(Math.random() * fromSquares.length)
+    }    
 
-            document.getElementById(fromSquares[pos].fromSquare).innerHTML = ''
-            document.getElementById(fromSquares[pos].toSquare).innerHTML += `
-                <img src="pieces/light.png" class="4${moveTo}" id="img" style="width: 100%;"></img>
-            `
+    if (canEatFrom.length != 0) {
 
-            computerSquares[computerSquares.indexOf(fromSquares[pos].fromSquare)] = fromSquares[pos].toSquare
-            avaiableSquares[avaiableSquares.indexOf(fromSquares[pos].toSquare)] = fromSquares[pos].fromSquare
+        pos = Math.floor(Math.random() * canEatFrom.length)
+
+        document.getElementById(canEatFrom[pos].fromSquare).innerHTML = ''
+        document.getElementById(canEatFrom[pos].eatSquare).innerHTML = ''
+        document.getElementById(canEatFrom[pos].toSquare).innerHTML += `
+            <img src="pieces/light.png" class="4${moveTo}" id="img" style="width: 100%;"></img>
+        `
+
+        computerSquares[computerSquares.indexOf(canEatFrom[pos].fromSquare)] = canEatFrom[pos].toSquare
+        playerSquares[playerSquares.indexOf(canEatFrom[pos].eatSquare)] = ''
+        avaiableSquares[avaiableSquares.indexOf(canEatFrom[pos].toSquare)] = canEatFrom[pos].fromSquare
+        
+    } else {
+
+        possibilities = 0
+
+        for (const square of avaiableSquares) {
+            possibilities += 1
+
+            line = parseInt(square.slice(0,1))
+            letter = square.slice(1,2)
+
+            if (line % 2 == 0) {
+                lettersTo = ['A','C','E','G']
+                lettersFrom = ['B','D','F','H']
+            } else {
+                lettersTo = ['B','D','F','H']
+                lettersFrom = ['A','C','E','G']
+            }
+
+            pos = lettersTo.indexOf(letter)
+
+            if (line % 2 == 0 && pos == 0) {
+                fromSquare = (parseInt(line)-1) + lettersFrom[pos]
+            } else if (line % 2 == 0 && pos != 0) {
+                fromSquare = (parseInt(line)-1) + lettersFrom[pos]
+                fromSquare2 = (parseInt(line)-1) + lettersFrom[pos-1]
+            } else if (line % 2 != 0 && pos == lettersTo.length) {
+                fromSquare = (parseInt(line)-1) + lettersFrom[pos]
+            } else if (line % 2 != 0 && pos != lettersTo.length) {
+                fromSquare = (parseInt(line)-1) + lettersFrom[pos]
+                fromSquare2 = (parseInt(line)-1) + lettersFrom[pos+1]
+            }
+
+            if (computerSquares.includes(fromSquare) && !fromSquares.includes(fromSquare)) {
+                fromSquares.push({"toSquare":square, "fromSquare":fromSquare})
+            }
+
+            if (computerSquares.includes(fromSquare2)
+                && !fromSquares.includes(fromSquare2)
+                && fromSquare2 != '') {
+                fromSquares.push({"toSquare":square, "fromSquare":fromSquare2})
+            }
+
+            
+            if (possibilities == avaiableSquares.length) {
+                pos = Math.floor(Math.random() * fromSquares.length)
+
+                document.getElementById(fromSquares[pos].fromSquare).innerHTML = ''
+                document.getElementById(fromSquares[pos].toSquare).innerHTML += `
+                    <img src="pieces/light.png" class="4${moveTo}" id="img" style="width: 100%;"></img>
+                `
+
+                computerSquares[computerSquares.indexOf(fromSquares[pos].fromSquare)] = fromSquares[pos].toSquare
+                avaiableSquares[avaiableSquares.indexOf(fromSquares[pos].toSquare)] = fromSquares[pos].fromSquare
+            }
+            // avaiableLines.includes(line) ? '' : avaiableLines.push(line)
         }
-        // avaiableLines.includes(line) ? '' : avaiableLines.push(line)
     }
 }
