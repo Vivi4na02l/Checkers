@@ -16,7 +16,8 @@ let avaiableSquares = [
     '5B','5D','5F','5H',
 ];
 
-let clicked = true; //play = false;
+let clicked = true;
+let lockedClick = false;
 let firstSquare;
 checkersBoard();
 squareSizes();
@@ -141,10 +142,11 @@ function squareSizes() {
 /**
  * detects if there's a piece in the square clicked and averigues the player choose to move to another square
  * @param {*} id position/specific square clicked on
+ * @param {*} iClass means that the id returned "img", which means there's a piece whitin the div. iClass is the the position of the square clicked on
  */
 function movePieces(id, iClass) {
 
-    if (clicked) {
+    if (clicked && !lockedClick) {
         if (id != "img") {
             clicked = false
 
@@ -154,7 +156,7 @@ function movePieces(id, iClass) {
 
             firstSquare = iClass
         }
-    } else {
+    } else if (!clicked && !lockedClick) {
         if (id == "img") {
             alert("You need to chose a free square to move your piece!")
             document.getElementById(firstSquare).style.backgroundColor = "#aa793a"
@@ -200,6 +202,7 @@ function defaultColors(id, firstSquare) {
  * determines what plays the computer is gonna make
  */
 function computersTurn() {
+    lockedClick = true
 
     let letters = ['A','B','C','D','E','F','G','H']
     let fromSquares = []
@@ -257,7 +260,7 @@ function computersTurn() {
         `
         document.getElementById(canEatFrom[pos].eatSquare).style.backgroundColor = "#aa3a3a"
 
-        setTimeout(eatenSquare, "1000", canEatFrom,pos,true)
+        setTimeout(eatenSquare, "500", canEatFrom,pos,true)
 
         computerSquares[computerSquares.indexOf(canEatFrom[pos].fromSquare)] = canEatFrom[pos].toSquare
         playerSquares[playerSquares.indexOf(canEatFrom[pos].eatSquare)] = ''
@@ -324,8 +327,16 @@ function computersTurn() {
     console.log(playerSquares);
     console.log(computerSquares);
     console.log(avaiableSquares);
+    lockedClick = false
 }
 
+/**
+ * function triggered by a delay-code of 1sec.
+ * Makes the piece that has been eaten disappear of the board
+ * @param {*} canEatFrom array that has the eaten possibilities
+ * @param {*} pos random number within the length of canEatFrom 
+ * @param {*} isPc returns true/false, depending if this function was triggered within the player's or pc's turn
+ */
 function eatenSquare(canEatFrom,pos,isPc) {
     if (isPc) {
         document.getElementById(canEatFrom[pos].eatSquare).innerHTML = ''
