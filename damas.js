@@ -172,7 +172,8 @@ function movePieces(id, iClass) {
 
                 document.getElementById(firstSquare).innerHTML = ''
                 document.getElementById(firstSquare).style.backgroundColor = "#aa793a"
-                computersTurn();
+
+                setTimeout(computersTurn, "500")
             } else {
                 // alert("You can't go that far!")
                 document.getElementById(id).style.backgroundColor = "#aa3a3a"
@@ -214,8 +215,6 @@ function computersTurn() {
         posLetter = letters.indexOf(letter)
 
         for (const playerPiece of playerSquares) {
-            possibilities += 1
-
             pLine = parseInt(playerPiece.slice(0,1))
             pLetter = playerPiece.slice(1,2)
 
@@ -226,7 +225,7 @@ function computersTurn() {
                 if ((line+1 == pLine) &&
                     (letters[posLetter+1] == pLetter) &&
                     (avaiableSquares.includes(pLine+1+letters[posLetter+2]))) {
-                        console.log('1');
+
                     canEatFrom.push({
                         "fromSquare" : line+letter,
                         "eatSquare" : pLine+pLetter,
@@ -246,15 +245,6 @@ function computersTurn() {
                 }
             }
         }
-
-        // eatPieceLine = parseInt(line) + 1
-
-        // if (line % 2 == 0) {
-        //     eatPieceLetter2 = letters[pos-1]    
-        // } else {
-        //     eatPieceLetter = letters[pos+1]
-        // }
-        
     }    
 
     if (canEatFrom.length != 0) {
@@ -262,10 +252,12 @@ function computersTurn() {
         pos = Math.floor(Math.random() * canEatFrom.length)
 
         document.getElementById(canEatFrom[pos].fromSquare).innerHTML = ''
-        document.getElementById(canEatFrom[pos].eatSquare).innerHTML = ''
         document.getElementById(canEatFrom[pos].toSquare).innerHTML += `
             <img src="pieces/light.png" class="4${moveTo}" id="img" style="width: 100%;"></img>
         `
+        document.getElementById(canEatFrom[pos].eatSquare).style.backgroundColor = "#aa3a3a"
+
+        setTimeout(eatenSquare, "1000", canEatFrom,pos,true)
 
         computerSquares[computerSquares.indexOf(canEatFrom[pos].fromSquare)] = canEatFrom[pos].toSquare
         playerSquares[playerSquares.indexOf(canEatFrom[pos].eatSquare)] = ''
@@ -327,5 +319,16 @@ function computersTurn() {
             }
             // avaiableLines.includes(line) ? '' : avaiableLines.push(line)
         }
+    }
+
+    console.log(playerSquares);
+    console.log(computerSquares);
+    console.log(avaiableSquares);
+}
+
+function eatenSquare(canEatFrom,pos,isPc) {
+    if (isPc) {
+        document.getElementById(canEatFrom[pos].eatSquare).innerHTML = ''
+        document.getElementById(canEatFrom[pos].eatSquare).style.backgroundColor = "#aa793a"      
     }
 }
