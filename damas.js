@@ -145,6 +145,49 @@ function squareSizes() {
  * @param {*} iClass means that the id returned "img", which means there's a piece whitin the div. iClass is the the position of the square clicked on
  */
 function movePieces(id, iClass) {
+    let letters = ['A','B','C','D','E','F','G','H']
+    let canEatFrom = []
+    let line, letter, posLetter, pLine, pLetter
+
+    for (const square of playerSquares) {
+        line = parseInt(square.slice(0,1))
+        letter = square.slice(1,2)
+        posLetter = parseInt(letters.indexOf(letter))
+
+        for (const pcPiece of computerSquares) {
+            pLine = parseInt(pcPiece.slice(0,1))
+            pLetter = pcPiece.slice(1,2)
+
+            if ((pLine % 2 == 0 && pLetter != 'A') ||
+                (pLine % 2 != 0 && pLetter != 'H')) {
+
+                
+                if ((line-1 == pLine) &&
+                    (letters[posLetter+1] == pLetter) &&
+                    (avaiableSquares.includes((pLine-1)+letters[posLetter+2]))) {
+
+                    canEatFrom.push({
+                        "fromSquare" : line+letter,
+                        "eatSquare" : pLine+pLetter,
+                        "toSquare" : (pLine-1) + letters[posLetter+2]
+                    })
+                    // console.log(canEatFrom);
+
+                } else if ((line-1 == pLine) &&
+                            (letters[posLetter-1] == pLetter) &&
+                            (avaiableSquares.includes((pLine-1)+letters[posLetter-2]))) {
+
+                    canEatFrom.push({
+                        "fromSquare" : line+letter,
+                        "eatSquare" : pLine+pLetter,
+                        "toSquare" : (pLine-1) + letters[posLetter-2]
+                    })
+                }
+            }
+
+            // console.log(canEatFrom);
+        }
+    }
 
     if (clicked && !lockedClick) {
         if (id != "img") {
@@ -157,10 +200,36 @@ function movePieces(id, iClass) {
             firstSquare = iClass
         }
     } else if (!clicked && !lockedClick) {
+        // console.log('oi'+canEatFrom);
+
         if (id == "img") {
             alert("You need to chose a free square to move your piece!")
             document.getElementById(firstSquare).style.backgroundColor = "#aa793a"
+        } else if (canEatFrom.find(item => item.toSquare == id)) {
+            document.getElementById(firstSquare).innerHTML = ''
+            document.getElementById(firstSquare).style.backgroundColor = "#aa793a"
+            document.getElementById(id).innerHTML += `
+                <img src="pieces/black.png" class="${id}" id="img" style="width: 100%;"></img>
+            `
+
+            document.getElementById(canEatFrom[canEatFrom.findIndex(item => item.toSquare == id)].eatSquare).style.backgroundColor = "#aa3a3a"
+
+            let pos = canEatFrom.findIndex(item => item.toSquare == id)
+            playerSquares[playerSquares.indexOf(canEatFrom[pos].fromSquare)] = canEatFrom[pos].toSquare
+            avaiableSquares[avaiableSquares.indexOf(canEatFrom[pos].toSquare)] = canEatFrom[pos].fromSquare
+            avaiableSquares[avaiableSquares.push(canEatFrom[pos].eatSquare)]
+            computerSquares = computerSquares.filter(item => item != canEatFrom[pos].eatSquare)
+
+            setTimeout(eatenSquare, "500", canEatFrom,canEatFrom.findIndex(item => item.toSquare == id),false)
+
+            console.log("");
+            console.log("player's turn");
+            console.log('player: '+playerSquares.sort());
+            console.log('pc: '+computerSquares.sort());
+            console.log('empty: '+avaiableSquares.sort());
+            setTimeout(computersTurn, "500")
         } else {
+
             let line2 = parseInt(id.slice(0,1))
             let line1 = parseInt(firstSquare.slice(0,1))
 
@@ -215,7 +284,7 @@ function computersTurn() {
     for (const square of computerSquares) {
         line = parseInt(square.slice(0,1))
         letter = square.slice(1,2)
-        posLetter = letters.indexOf(letter)
+        posLetter = parseInt(letters.indexOf(letter))
 
         for (const playerPiece of playerSquares) {
             pLine = parseInt(playerPiece.slice(0,1))
@@ -234,7 +303,7 @@ function computersTurn() {
                         "eatSquare" : pLine+pLetter,
                         "toSquare" : (pLine+1) + letters[posLetter+2]
                     })
-                    console.log(canEatFrom);
+                    // console.log(canEatFrom);
 
                 } else if ((line+1 == pLine) &&
                             (letters[posLetter-1] == pLetter) &&
@@ -256,16 +325,20 @@ function computersTurn() {
 
         document.getElementById(canEatFrom[pos].fromSquare).innerHTML = ''
         document.getElementById(canEatFrom[pos].toSquare).innerHTML += `
-            <img src="pieces/light.png" class="4${moveTo}" id="img" style="width: 100%;"></img>
+            <img src="pieces/light.png" class="4${canEatFrom[pos].toSquare}" id="img" style="width: 100%;"></img>
         `
         document.getElementById(canEatFrom[pos].eatSquare).style.backgroundColor = "#aa3a3a"
 
         setTimeout(eatenSquare, "500", canEatFrom,pos,true)
 
         computerSquares[computerSquares.indexOf(canEatFrom[pos].fromSquare)] = canEatFrom[pos].toSquare
-        playerSquares[playerSquares.indexOf(canEatFrom[pos].eatSquare)] = ''
         avaiableSquares[avaiableSquares.indexOf(canEatFrom[pos].toSquare)] = canEatFrom[pos].fromSquare
-        
+
+        // console.log(canEatFrom[pos].eatSquare);
+
+        avaiableSquares[avaiableSquares.push(canEatFrom[pos].eatSquare)]
+        playerSquares = playerSquares.filter(ind => ind != canEatFrom[pos].eatSquare)
+
     } else {
 
         possibilities = 0
@@ -314,7 +387,7 @@ function computersTurn() {
 
                 document.getElementById(fromSquares[pos].fromSquare).innerHTML = ''
                 document.getElementById(fromSquares[pos].toSquare).innerHTML += `
-                    <img src="pieces/light.png" class="4${moveTo}" id="img" style="width: 100%;"></img>
+                    <img src="pieces/light.png" class="4${fromSquares[pos].toSquare}" id="img" style="width: 100%;"></img>
                 `
 
                 computerSquares[computerSquares.indexOf(fromSquares[pos].fromSquare)] = fromSquares[pos].toSquare
@@ -324,9 +397,11 @@ function computersTurn() {
         }
     }
 
-    console.log(playerSquares);
-    console.log(computerSquares);
-    console.log(avaiableSquares);
+    console.log("");
+    console.log("pc's turn");
+    console.log('player: '+playerSquares.sort());
+    console.log('pc: '+computerSquares.sort());
+    console.log('empty: '+avaiableSquares.sort());
     lockedClick = false
 }
 
@@ -339,6 +414,9 @@ function computersTurn() {
  */
 function eatenSquare(canEatFrom,pos,isPc) {
     if (isPc) {
+        document.getElementById(canEatFrom[pos].eatSquare).innerHTML = ''
+        document.getElementById(canEatFrom[pos].eatSquare).style.backgroundColor = "#aa793a"      
+    } else {
         document.getElementById(canEatFrom[pos].eatSquare).innerHTML = ''
         document.getElementById(canEatFrom[pos].eatSquare).style.backgroundColor = "#aa793a"      
     }
