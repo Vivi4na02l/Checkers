@@ -29,7 +29,19 @@ squareSizes();
 window.addEventListener("resize", event => {
     squareSizes();
 })
+// clicked && !lockedClick
 
+window.addEventListener("keydown", function(e) {
+    if (e.key == 'Escape') {
+        clicked = true
+        lockedClick = false
+
+        let squares = document.querySelectorAll(".bSquare")
+        for (const square of squares) {
+            square.style.backgroundColor = "#aa793a";
+        }
+    }
+})
 
 /**
  * event that detects which square was clicked and gives information to function
