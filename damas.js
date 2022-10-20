@@ -239,7 +239,7 @@ function movePieces(id, iClass) {
             console.log('player: '+playerSquares.sort());
             console.log('pc: '+computerSquares.sort());
             console.log('empty: '+avaiableSquares.sort());
-            setTimeout(computersTurn, "500")
+            setTimeout(computersTurn, "1000")
         } else {
 
             let line2 = parseInt(id.slice(0,1))
