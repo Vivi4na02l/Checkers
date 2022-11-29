@@ -1,3 +1,18 @@
+html, body {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+.dflex {
+    display: flex;
+} .jcc {
+    justify-content: center;
+} .aic {
+    align-items: center;
+} .fdc {
+    flex-direction: column;
+}
+
 .w100 {
     width: 100%
 } .w90 {
@@ -14,4 +29,16 @@
     background-color: #ffe9cc;
 } .bSquare {
     background-color: #aa793a;
+}
+
+p {
+    text-shadow: 0px 3px 5px #000000;
+}
+
+img {
+    filter: drop-shadow(0px 2px 3px #00000033);
+}
+
+#damaBoard {
+    filter: drop-shadow(0px 0px 25px #00000056);
 }

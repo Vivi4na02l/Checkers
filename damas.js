@@ -16,32 +16,66 @@ let avaiableSquares = [
     '5B','5D','5F','5H',
 ];
 
+let moves = {
+    pcMovedFrom: '',
+    pcMovedTo: '',
+    playerMovedFrom: '',
+    playerMovedTo: '',
+
+    pcColorFrom: '#ffb96b', //'#ff7272'
+    pcColorTo: '#e57e00', // '#ff2b2b'
+    playerColorFrom: '#a5cea7',
+    playerColorTo: '#3b9641',
+}
+
 let clicked = true;
 let lockedClick = false;
 let firstSquare;
 checkersBoard();
 squareSizes();
 
-
 /**
  * if window size gets changed than it will change the squares proportions aswell
  */
 window.addEventListener("resize", event => {
     squareSizes();
+    document.querySelector('body').style.height = window.innerHeight + 'px'
 })
-// clicked && !lockedClick
 
 window.addEventListener("keydown", function(e) {
     if (e.key == 'Escape') {
-        clicked = true
-        lockedClick = false
-
-        let squares = document.querySelectorAll(".bSquare")
-        for (const square of squares) {
-            square.style.backgroundColor = "#aa793a";
-        }
+        cancelPlay()
+    } else if (e.key == 'Shift') {
+        // setTimeout(showMovedPlays, "1000")
+        showMovedPlays()
     }
 })
+
+window.addEventListener("keypress", function(e) {
+    if (e.key == 'Shift') {
+        console.log('woah');
+    }
+})
+
+function cancelPlay() {
+    clicked = true
+    lockedClick = false
+
+    let squares = document.querySelectorAll(".bSquare")
+    for (const square of squares) {
+        square.style.backgroundColor = "#aa793a";
+    }
+}
+
+function showMovedPlays() {
+    cancelPlay()
+    console.log(moves);
+
+    document.getElementById(moves.pcMovedFrom).style.backgroundColor = moves.pcColorFrom
+    document.getElementById(moves.pcMovedTo).style.backgroundColor = moves.pcColorTo
+    document.getElementById(moves.playerMovedFrom).style.backgroundColor = moves.playerColorFrom
+    document.getElementById(moves.playerMovedTo).style.backgroundColor = moves.playerColorTo
+}
 
 /**
  * event that detects which square was clicked and gives information to function
@@ -65,7 +99,7 @@ function checkersBoard() {
 
     for (let r=0; r<8; r++) {
         html += `
-            <tr class="d-flex justify-content-center" id="rowSquare">
+            <tr class="dflex jcc" id="rowSquare">
         `
 
         for (let c=0; c<8; c++) {
@@ -86,24 +120,24 @@ function checkersBoard() {
             if (pos == 1) {
                 if (r < 3) {
                     html += `
-                        <td class="w12 ${squares[pos]}" id="${numbers[r]}${letters[c]}">
-                            <img src="pieces/light.png" class="${numbers[r]}${letters[c]}" width="100%" id="img">
+                        <td class="w12 dflex jcc aic ${squares[pos]}" id="${numbers[r]}${letters[c]}">
+                            <img src="pieces/light.png" class="${numbers[r]}${letters[c]}" width="93%" id="img">
                         </td>
                     `   
                 } else if (r >= 5) {
                     html += `
-                        <td class="w12 ${squares[pos]}" id="${numbers[r]}${letters[c]}">
-                            <img src="pieces/black.png" class="${numbers[r]}${letters[c]}" id="img" style="width: 100%;">
+                        <td class="w12 dflex jcc aic ${squares[pos]}" id="${numbers[r]}${letters[c]}">
+                            <img src="pieces/black.png" class="${numbers[r]}${letters[c]}" id="img" style="width: 93%;">
                         </td>
                     `   
                 } else {
                     html += `
-                        <td class="w12 ${squares[pos]}" id="${numbers[r]}${letters[c]}"></td>
+                        <td class="w12 dflex jcc aic ${squares[pos]}" id="${numbers[r]}${letters[c]}"></td>
                     ` 
                 }     
             } else {
                 html += `
-                    <td class="w12 ${squares[pos]}" id="${numbers[r]}${letters[c]}"></td>
+                    <td class="w12 dflex jcc aic ${squares[pos]}" id="${numbers[r]}${letters[c]}"></td>
                 ` 
             }
 
@@ -122,6 +156,8 @@ function checkersBoard() {
  * defines height of squares to be the same as the width
  */
 function squareSizes() {
+    document.querySelector('body').style.height = window.innerHeight + 'px'
+
     if (window.innerHeight > window.innerWidth) {
         // let wdSquare = document.querySelector('.w12').clientWidth
         // wdSquare += 'px'
@@ -151,16 +187,17 @@ function squareSizes() {
 }
 
 
-/**
- * detects if there's a piece in the square clicked and averigues the player choose to move to another square
+/*********************************************************************
+ * detects if there's a piece in the square clicked and averigues the player's choice to move to another square
  * @param {*} id position/specific square clicked on
  * @param {*} iClass means that the id returned "img", which means there's a piece whitin the div. iClass is the the position of the square clicked on
- */
+ *********************************************************************/
 function movePieces(id, iClass) {
     let letters = ['A','B','C','D','E','F','G','H']
     let canEatFrom = []
     let line, letter, posLetter, pLine, pLetter
 
+    //verifies if there's any possible play where player eats any of pc's pieces
     for (const square of playerSquares) {
         line = parseInt(square.slice(0,1))
         letter = square.slice(1,2)
@@ -195,12 +232,14 @@ function movePieces(id, iClass) {
                         "toSquare" : (pLine-1) + letters[posLetter-2]
                     })
                 }
-            }
-
-            // console.log(canEatFrom);
+            } // console.log(canEatFrom);
         }
     }
 
+    /**
+     * @param {*} clicked true(first piece to be clicked) false(first piece already clicked, waiting for a second click on another square)
+     * @param {*} lockedClick true(doesn't allow any click)
+     */
     if (clicked && !lockedClick) {
         if (id != "img") {
             clicked = false
@@ -211,8 +250,7 @@ function movePieces(id, iClass) {
 
             firstSquare = iClass
         }
-    } else if (!clicked && !lockedClick) {
-        // console.log('oi'+canEatFrom);
+    } else if (!clicked && !lockedClick) { // console.log(canEatFrom);
 
         if (id == "img") {
             alert("You need to chose a free square to move your piece!")
@@ -221,12 +259,14 @@ function movePieces(id, iClass) {
             document.getElementById(firstSquare).innerHTML = ''
             document.getElementById(firstSquare).style.backgroundColor = "#aa793a"
             document.getElementById(id).innerHTML += `
-                <img src="pieces/black.png" class="${id}" id="img" style="width: 100%;"></img>
+                <img src="pieces/black.png" class="${id}" id="img" style="width: 93%;"></img>
             `
 
-            document.getElementById(canEatFrom[canEatFrom.findIndex(item => item.toSquare == id)].eatSquare).style.backgroundColor = "#aa3a3a"
+            moves.playerMovedFrom = firstSquare
+            moves.playerMovedTo = id
 
             let pos = canEatFrom.findIndex(item => item.toSquare == id)
+            document.getElementById(canEatFrom[pos].eatSquare).style.backgroundColor = "#aa3a3a"
             playerSquares[playerSquares.indexOf(canEatFrom[pos].fromSquare)] = canEatFrom[pos].toSquare
             avaiableSquares[avaiableSquares.indexOf(canEatFrom[pos].toSquare)] = canEatFrom[pos].fromSquare
             avaiableSquares[avaiableSquares.push(canEatFrom[pos].eatSquare)]
@@ -240,6 +280,7 @@ function movePieces(id, iClass) {
             console.log('pc: '+computerSquares.sort());
             console.log('empty: '+avaiableSquares.sort());
             setTimeout(computersTurn, "1000")
+
         } else {
 
             let line2 = parseInt(id.slice(0,1))
@@ -247,8 +288,11 @@ function movePieces(id, iClass) {
 
             if (line1 - 1 == line2) {
                 document.getElementById(id).innerHTML += `
-                    <img src="pieces/black.png" class="${id}" id="img" style="width: 100%;"></img>
+                    <img src="pieces/black.png" class="${id}" id="img" style="width: 93%;"></img>
                 `
+
+                moves.playerMovedFrom = firstSquare
+                moves.playerMovedTo = id
 
                 playerSquares[playerSquares.indexOf(firstSquare)] = id
                 avaiableSquares[avaiableSquares.indexOf(id)] = firstSquare
@@ -337,9 +381,12 @@ function computersTurn() {
 
         document.getElementById(canEatFrom[pos].fromSquare).innerHTML = ''
         document.getElementById(canEatFrom[pos].toSquare).innerHTML += `
-            <img src="pieces/light.png" class="4${canEatFrom[pos].toSquare}" id="img" style="width: 100%;"></img>
+            <img src="pieces/light.png" class="4${canEatFrom[pos].toSquare}" id="img" style="width: 93%;"></img>
         `
         document.getElementById(canEatFrom[pos].eatSquare).style.backgroundColor = "#aa3a3a"
+
+        moves.pcMovedFrom = canEatFrom[pos].fromSquare
+        moves.pcMovedTo = canEatFrom[pos].toSquare
 
         setTimeout(eatenSquare, "500", canEatFrom,pos,true)
 
@@ -399,8 +446,11 @@ function computersTurn() {
 
                 document.getElementById(fromSquares[pos].fromSquare).innerHTML = ''
                 document.getElementById(fromSquares[pos].toSquare).innerHTML += `
-                    <img src="pieces/light.png" class="4${fromSquares[pos].toSquare}" id="img" style="width: 100%;"></img>
+                    <img src="pieces/light.png" class="4${fromSquares[pos].toSquare}" id="img" style="width: 93%;"></img>
                 `
+
+                moves.pcMovedFrom = fromSquares[pos].fromSquare
+                moves.pcMovedTo = fromSquares[pos].toSquare
 
                 computerSquares[computerSquares.indexOf(fromSquares[pos].fromSquare)] = fromSquares[pos].toSquare
                 avaiableSquares[avaiableSquares.indexOf(fromSquares[pos].toSquare)] = fromSquares[pos].fromSquare
